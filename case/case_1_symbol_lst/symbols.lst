@@ -1,0 +1,14 @@
+{
+global:
+    extern "C++" {
+        HobotZmqClient::*;
+        HobotZmqServer::*;
+        *WriteBin*;
+        *ReadBin*;
+        *Serialize*;
+        *Deserialize*;
+        SendModule::*;
+    };
+local:
+    *;
+};

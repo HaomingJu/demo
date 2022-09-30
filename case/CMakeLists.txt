@@ -1,0 +1,1 @@
+add_subdirectory(case_1_symbol_lst)
