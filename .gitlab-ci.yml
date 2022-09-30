@@ -1,0 +1,39 @@
+stages:
+  - build
+  - deploy
+
+
+build_on_ubuntu_16.04_x86_64:
+  stage: build
+  tags:
+    - runner_tags
+
+  image: ubuntu:6.04
+  artifacts:
+      name: "1604_${CI_COMMIT_SHORT_SHA}"
+      paths:
+        - build/packages/*.deb
+      expire_in: '300'
+      when: on_success
+  script:
+    - cmake -B build .
+    - cmake --build build --target package -j4
+
+deploy_from_ubuntu_16.04_x86_64:
+  stage: deploy
+  needs: ["build_on_ubuntu_16.04_x86_64"]
+  dependencies:
+    - build_on_ubuntu_16.04_x86_64
+  tags:
+    - runner_tags
+  image: ubuntu:16.04
+  only:
+    - master
+  script:
+    - cd $CI_PROJECT_DIR/build/packages
+    - dir=`basename $CI_PROJECT_DIR`
+    - pkg_name=`ls`
+    - curl -u$JFROG_USER:$JFROG_PASSWORD -XPUT
+              "http://192.168.3.248:8081/artifactory/infra/pool/main/$dir/$pkg_name;deb.distribution=$(lsb_release -cs);deb.component=main;deb.architecture=amd64"
+              -T $pkg_name
+  when: on_success
