@@ -12,19 +12,6 @@ execute_process(COMMAND ${DPKG_EXEC} --print-architecture
     OUTPUT_VARIABLE DPKG_ARCH
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-# Retrieve the machine supported by the toolchain
-if (DEFINED CMAKE_TOOLCHAIN_FILE)
-  execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpmachine
-      OUTPUT_VARIABLE TOOLCHAIN_MACHINE OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  if (${TOOLCHAIN_MACHINE} STREQUAL "arm-linux-gnueabihf")
-    set(DPKG_ARCH armhf)
-  endif()
-  if (${TOOLCHAIN_MACHINE} STREQUAL "aarch64-linux-gnu")
-    set(DPKG_ARCH arm64)
-  endif()
-endif()
-
 # 打包相关
 set(CPACK_GENERATOR "DEB;TGZ")
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
@@ -53,9 +40,7 @@ set(CPACK_PACKAGE_ARCHITECTURE ${DPKG_ARCH})
 set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${DPKG_ARCH})
 
 # 依赖
-if (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-  set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-endif()
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # 若该标志为NO, 则将自动获取依赖, 若想完全手动设置则需要关闭
 #set(CPACK_DEBIAN_PACKAGE_DEPENDS "TODO")
 #set(CPACK_DEBIAN_PACKAGE_DEPENDS "ying (>= 1.0.4), protobuf-compiler (>= 3.0.0), libyaml-cpp-dev (>= 0.5.2)")
 
