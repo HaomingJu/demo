@@ -12,3 +12,6 @@ add_library(symbol_hidden SHARED symbol_hidden.cc)
 add_executable(entry entry.cc)
 
 target_link_libraries(entry symbol_hidden)
+
+install(TARGETS symbol_hidden LIBRARY DESTINATION lib)
+install(TARGETS entry LIBRARY DESTINATION bin)
